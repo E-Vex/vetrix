@@ -1,5 +1,6 @@
 /* Standard library */
 #include <stdio.h>
+#include <stdlib.h>
 
 /* Project headers */
 #include "file_info.h"

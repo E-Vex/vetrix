@@ -7,6 +7,7 @@
 #include "endian.h"
 #include "packet_context.h"
 #include "protocols.h"
+#include "../protocol_swap.h"
 
 void parse_ipv4_header(packet_context_t *ctx)
 {
