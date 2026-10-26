@@ -12,7 +12,7 @@ FILE *import_binary_file(const char *filename)
     FILE *filePointer = fopen(filename, "rb");
     if (filePointer == NULL)
     {
-        printf("Failed to open the file <NULL>\n");
+        fprintf(stderr, "Error: failed to open file '%s'\n", filename);
 
         return NULL;
     }
@@ -28,7 +28,7 @@ void check_file_pointer(FILE *fp)
 {
     if (fp == NULL)
     {
-        printf("Error: failed to open the file\n");
+        fprintf(stderr, "Error: failed to open file\n");
         exit(1);
     }
 }
