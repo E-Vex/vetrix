@@ -23,10 +23,10 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
     pcap_packet_header_t packet_header;
     packet_context_t ctx;
 
-    unsigned int packet_counter = 0;
+    int packet_counter = 0;
     long limit = file_info->packets_to_read;
 
-    while ((limit < 0 || packet_counter < (unsigned int)limit) && fread(&packet_header, sizeof(pcap_packet_header_t), 1, fp) == 1)
+    while ((limit < 0 || packet_counter < limit) && fread(&packet_header, sizeof(pcap_packet_header_t), 1, fp) == 1)
     {
         ctx.remaining_payload = 0;
         ctx.fp = fp;
@@ -36,28 +36,39 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
         uint8_t *bytes = magic_number_as_bytes(&magic_number);
         int pcap_endian = detect_pcap_endianness(bytes);
         ctx.host_endianness = detect_host_endianness();
+        ctx.pcap_endianness = pcap_endian;
         if (pcap_endian != ctx.host_endianness)
             swap_packet_header(&packet_header);
         /*-----------------------------------------------------*/
 
         ctx.remaining_payload += packet_header.incl_len;
 
+        print_packet_header(&packet_header);
+
         switch (data_link_type)
         {
         case LINKTYPE_ETHERNET:
+        {
             ethernet_header_t ethernet_header;
+            (void)ethernet_header;
+            fseek(fp, packet_header.incl_len, SEEK_CUR);
             break;
+        }
 
         case LINKTYPE_LINUX_SLL:
+        {
             sll_header_t sll_header;
+            (void)sll_header;
+            fseek(fp, packet_header.incl_len, SEEK_CUR);
             break;
+        }
 
         case LINKTYPE_LINUX_SLL2:
-
+        {
             parse_sll2_header(&ctx);
             ctx.remaining_payload -= sizeof(sll2_header_t);
 
-            if (ctx.next_protocol == 0x800) // ipv4*
+            if (ctx.next_protocol == 0x800) // ipv4
             {
                 parse_ipv4_header(&ctx);
 
@@ -65,9 +76,26 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
                 {
                     parse_tcp_header(&ctx);
                 }
+                else if (ctx.remaining_payload > 0)
+                {
+                    fseek(fp, ctx.remaining_payload, SEEK_CUR);
+                    ctx.remaining_payload = 0;
+                }
+            }
+            else if (ctx.remaining_payload > 0)
+            {
+                fseek(fp, ctx.remaining_payload, SEEK_CUR);
+                ctx.remaining_payload = 0;
+            }
+
+            if (ctx.remaining_payload > 0)
+            {
+                fseek(fp, ctx.remaining_payload, SEEK_CUR);
+                ctx.remaining_payload = 0;
             }
 
             break;
+        }
 
         default:
             printf("Unsupported Link Type!\n");
