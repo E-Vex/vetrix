@@ -91,12 +91,6 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
                 ctx.remaining_payload = 0;
             }
 
-            if (ctx.remaining_payload > 0)
-            {
-                fseek(fp, ctx.remaining_payload, SEEK_CUR);
-                ctx.remaining_payload = 0;
-            }
-
             break;
         }
 
