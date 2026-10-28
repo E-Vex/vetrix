@@ -12,5 +12,6 @@
 #include "protocols.h"
 
 void parse_tcp_header(packet_context_t *ctx);
+void parse_udp_header(packet_context_t *ctx);
 
 #endif

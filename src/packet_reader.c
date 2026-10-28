@@ -75,16 +75,6 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
             if (ctx.next_protocol == 0x800) // ipv4
             {
                 parse_ipv4_header(&ctx);
-
-                if (ctx.next_protocol == 6) // TCP
-                {
-                    parse_tcp_header(&ctx);
-                }
-                else if (ctx.remaining_payload > 0)
-                {
-                    fseek(fp, ctx.remaining_payload, SEEK_CUR);
-                    ctx.remaining_payload = 0;
-                }
             }
             else if (ctx.remaining_payload > 0)
             {

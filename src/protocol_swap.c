@@ -76,3 +76,14 @@ void swap_tcp_header(tcp_header_t *tcp_header)
     // swap_bytes(tcp_header->offset_reserved, sizeof(tcp_header->offset_reserved));
     // swap_bytes(tcp_header->flags, sizeof(tcp_header->flags));
 }
+void swap_udp_header(udp_header_t *udp_header)
+{
+    static const field_descriptor_t fields[4] =
+        {
+            {offsetof(udp_header_t, source_port), sizeof(udp_header->source_port)},
+            {offsetof(udp_header_t, dst_port), sizeof(udp_header->dst_port)},
+            {offsetof(udp_header_t, length), sizeof(udp_header->length)},
+            {offsetof(udp_header_t, checksum), sizeof(udp_header->checksum)}};
+
+    swap_fields(udp_header, fields, 4);
+}

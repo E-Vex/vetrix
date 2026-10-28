@@ -33,3 +33,17 @@ void parse_tcp_header(packet_context_t *ctx)
 
     print_tcp_header(&tcp_header);
 }
+void parse_udp_header(packet_context_t *ctx)
+{
+    udp_header_t udp_header;
+
+    if (fread(&udp_header, sizeof(udp_header_t), 1, ctx->fp) != 1)
+        return;
+
+    if (ctx->host_endianness == 1)
+        swap_udp_header(&udp_header);
+
+    ctx->remaining_payload -= sizeof(udp_header_t);
+
+    print_udp_header(&udp_header);
+}

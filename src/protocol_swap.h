@@ -17,5 +17,6 @@ void swap_sll2_header(sll2_header_t *sll2_header);
 void swap_ipv4_header(ipv4_header_t *ipv4_header);
 
 void swap_tcp_header(tcp_header_t *tcp_header);
+void swap_udp_header(udp_header_t *udp_header);
 
 #endif

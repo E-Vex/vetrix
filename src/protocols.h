@@ -93,5 +93,12 @@ typedef struct __attribute__((packed)) // TCP Header
     uint16_t checksum;
     uint16_t urgent_ptr;
 } tcp_header_t;
+typedef struct __attribute__((packed)) // UDP Header
+{
+    uint16_t source_port;
+    uint16_t dst_port;
+    uint16_t length;
+    uint16_t checksum;
+} udp_header_t;
 /*-------------------------------------------------------------------*/
 #endif

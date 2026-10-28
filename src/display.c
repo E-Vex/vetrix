@@ -83,6 +83,15 @@ void print_tcp_header(tcp_header_t *tcp_header)
     printf("checksum: %u\n", tcp_header->checksum);
     printf("urgent_ptr: %u\n", tcp_header->urgent_ptr);
 }
+void print_udp_header(udp_header_t *udp_header)
+{
+    printf("source_port : %u\n", udp_header->source_port);
+    printf("dst_port : %u\n", udp_header->dst_port);
+    printf("length : %u\n", udp_header->length);
+    printf("checksum : %u\n", udp_header->checksum);
+
+    printf("----------------\n");
+}
 int print_payload(FILE *fp, size_t remaining_payload)
 {
     printf("\n--------------PAYLOAD--------------\n\n");

@@ -9,6 +9,7 @@
 #include "packet_context.h"
 #include "protocols.h"
 #include "../protocol_swap.h"
+#include "transport_layer.h"
 
 void parse_ipv4_header(packet_context_t *ctx)
 {
@@ -35,4 +36,19 @@ void parse_ipv4_header(packet_context_t *ctx)
     ctx->next_protocol = ipv4_header.protocol;
 
     print_ipv4_header(&ipv4_header);
+
+    if (ctx->next_protocol == 6) // TCP
+    {
+        parse_tcp_header(ctx);
+    }
+    else if (ctx->next_protocol == 17) // UDP
+    {
+        parse_udp_header(ctx);
+    }
+
+    if (ctx->remaining_payload > 0)
+    {
+        fseek(ctx->fp, ctx->remaining_payload, SEEK_CUR);
+        ctx->remaining_payload = 0;
+    }
 }
