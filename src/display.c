@@ -85,64 +85,59 @@ void print_tcp_header(tcp_header_t *tcp_header)
 }
 int print_payload(FILE *fp, size_t remaining_payload)
 {
-
     printf("\n--------------PAYLOAD--------------\n\n");
-
-    uint8_t byte_of_data;
-    uint8_t array_bytes_of_data[16];
-    size_t chk = 0;
-    int i = 0;
 
     if (remaining_payload == 0)
     {
         printf("There is no data to display\n");
+        return 0;
     }
-    else if (remaining_payload > 0)
-    {
-        while (chk < remaining_payload)
-        {
 
-            for (i = 0; i < 16; i++)
-            {
-                if (chk < remaining_payload)
-                {
-                    fread(&byte_of_data, sizeof(uint8_t), 1, fp);
-                    chk += 1;
-                    array_bytes_of_data[i] = byte_of_data;
-                }
-                else
-                {
-                    array_bytes_of_data[i] = 0x0;
-                }
-            }
-
-            for (i = 0; i < 16; i++)
-            {
-                if (isprint(array_bytes_of_data[i]))
-                {
-                    printf("%c", array_bytes_of_data[i]);
-                }
-                else
-                {
-                    printf(".");
-                }
-            }
-
-            printf("  |  ");
-
-            for (int i = 0; i < 16; i++)
-            {
-
-                printf("%02X ", array_bytes_of_data[i]);
-            }
-
-            printf("\n");
-        }
-    }
-    else
+    if (remaining_payload < 0)
     {
         printf("Error! the file has been broken or it's corrupted\n");
         return 1;
+    }
+
+    uint8_t buf[16];
+    size_t chk = 0;
+
+    while (chk < remaining_payload)
+    {
+        size_t to_read = remaining_payload - chk;
+        if (to_read > 16)
+            to_read = 16;
+
+        size_t nread = fread(buf, 1, to_read, fp);
+        if (nread == 0)
+        {
+            printf("Error: unexpected end of file while reading payload\n");
+            return 1;
+        }
+        chk += nread;
+
+        for (size_t i = 0; i < nread; i++)
+        {
+            if (isprint(buf[i]))
+                printf("%c", buf[i]);
+            else
+                printf(".");
+        }
+
+        printf("  |  ");
+
+        for (size_t i = 0; i < nread; i++)
+        {
+            printf("%02X ", buf[i]);
+        }
+
+        /* Pad the rest of the 16-byte row */
+        for (size_t i = nread; i < 16; i++)
+        {
+            printf("   ");
+        }
+
+        printf("\n");
     }
 
     return 0;
