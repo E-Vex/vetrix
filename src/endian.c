@@ -2,11 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct __attribute__((packed))
-{
-    size_t offset;
-    size_t size;
-} field_descriptor_t;
+/* Project headers */
+#include "endian.h"
 
 void swap_bytes(void *data, size_t size)
 {

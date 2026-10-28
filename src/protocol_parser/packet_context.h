@@ -11,6 +11,7 @@ typedef struct
     FILE *fp;
     size_t remaining_payload;
     int host_endianness;
+    int pcap_endianness;
 
     uint32_t next_protocol;
 

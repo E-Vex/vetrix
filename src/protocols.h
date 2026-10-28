@@ -44,11 +44,11 @@ typedef struct __attribute__((packed)) // SLL2 Header
 } sll2_header_t;
 typedef struct __attribute__((packed)) // SLL Header
 {
-
+    uint8_t _unused;
 } sll_header_t;
 typedef struct __attribute__((packed)) // Ethernet Header
 {
-
+    uint8_t _unused;
 } ethernet_header_t;
 /*-------------------------------------------------------------------*/
 
