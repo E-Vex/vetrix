@@ -27,8 +27,9 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
     long limit = file_info->packets_to_read;
 
     /* Detect endianness once before the packet loop */
-    uint8_t *bytes = magic_number_as_bytes(&magic_number);
-    int pcap_endian = detect_pcap_endianness(bytes);
+    uint8_t magic_bytes[4];
+    magic_number_as_bytes(magic_number, magic_bytes);
+    int pcap_endian = detect_pcap_endianness(magic_bytes);
     int host_endian = detect_host_endianness();
     int need_swap = (pcap_endian != host_endian);
 

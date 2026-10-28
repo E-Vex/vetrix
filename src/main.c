@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 
     uint32_t magic_number = global_header.magic_number;
 
-    uint32_t magic_local = global_header.magic_number;
-    uint8_t *bytes = magic_number_as_bytes(&magic_local);
-    int pcap_endian = detect_pcap_endianness(bytes);
+    uint8_t magic_bytes[4];
+    magic_number_as_bytes(global_header.magic_number, magic_bytes);
+    int pcap_endian = detect_pcap_endianness(magic_bytes);
     int host_endian = detect_host_endianness();
 
     if (pcap_endian != host_endian)

@@ -1,6 +1,7 @@
 /* Standard library */
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 /* Project headers */
 #include "endian.h"
@@ -30,17 +31,9 @@ void swap_fields(void *base, const field_descriptor_t *fields, size_t count)
 
 /*---------------------------------------------------------------*/
 
-uint8_t *magic_number_as_bytes(uint32_t *magic_number)
+void magic_number_as_bytes(uint32_t magic_number, uint8_t out[4])
 {
-    return (uint8_t *)magic_number;
-
-    /*=============================================+
-    | We put the magic_number into an 8-bit array  |
-    | to inspect the raw byte order one by one.If  |
-    | we compared it as a full 32-bit integer,our  |
-    | CPU's architecture might flip the bytes      |
-    | around and give us a false reading.          |
-    +============================================= */
+    memcpy(out, &magic_number, 4);
 }
 
 int detect_pcap_endianness(uint8_t *b)
