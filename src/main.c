@@ -24,7 +24,12 @@ int main(int argc, char *argv[])
     file_info_t file_info = {.path = NULL};
 
     /*---------------------------------------------------------------*/
-    if (parse_cli(argc, argv, &file_info) != 1)
+    int cli_result = parse_cli(argc, argv, &file_info);
+    if (cli_result == CLI_HELP)
+    {
+        return 0;
+    }
+    if (cli_result != CLI_SUCCESS)
     {
         return 1;
     }
