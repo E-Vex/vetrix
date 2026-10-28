@@ -102,12 +102,6 @@ int print_payload(FILE *fp, size_t remaining_payload)
         return 0;
     }
 
-    if (remaining_payload < 0)
-    {
-        printf("Error! the file has been broken or it's corrupted\n");
-        return 1;
-    }
-
     uint8_t buf[16];
     size_t chk = 0;
 
