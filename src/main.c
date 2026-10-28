@@ -9,6 +9,7 @@
 
 /* Project headers */
 #include "cli/cli.h"
+#include "display.h"
 #include "file_info.h"
 #include "file_io.h"
 #include "packet_reader.h"
@@ -19,7 +20,6 @@
 int main(int argc, char *argv[])
 {
     pcap_global_header_t global_header;
-    pcap_packet_header_t packet_header;
 
     file_info_t file_info = {.path = NULL};
 
@@ -39,9 +39,17 @@ int main(int argc, char *argv[])
     FILE *filePointer = import_binary_file(file_info.path);
     check_file_pointer(filePointer);
 
-    fread(&global_header, sizeof(pcap_global_header_t), 1, filePointer);
+    if (fread(&global_header, sizeof(pcap_global_header_t), 1, filePointer) != 1)
+    {
+        fprintf(stderr, "Error: failed to read global header\n");
+        fclose(filePointer);
+        return -1;
+    }
 
-    uint8_t *bytes = magic_number_as_bytes(&(global_header.magic_number));
+    uint32_t magic_number = global_header.magic_number;
+
+    uint32_t magic_local = global_header.magic_number;
+    uint8_t *bytes = magic_number_as_bytes(&magic_local);
     int pcap_endian = detect_pcap_endianness(bytes);
     int host_endian = detect_host_endianness();
 
@@ -50,14 +58,10 @@ int main(int argc, char *argv[])
         swap_global_header(&global_header);
     }
 
-    read_packets(filePointer, global_header.network, global_header.magic_number, &file_info);
+    print_global_header(&global_header);
+
+    read_packets(filePointer, global_header.network, magic_number, &file_info);
 
     fclose(filePointer);
     return 0;
 }
-
-//
-//
-/*------------------Print the position in the file------------------*/
-// long pos = ftell(filePointer);
-// printf("\n------>Position in file = %ld\n\n", pos);
