@@ -11,6 +11,7 @@
 #   make release       optimized build, no sanitizers
 #   make debug         explicit debug build
 #   make run ARGS="test.pcap"
+#   make test           run on src/test.pcap (10 packets)
 #   make clean
 #   make rebuild
 #   make NO_COLOR=1    disable ANSI colors (also auto-disabled when not a TTY)
@@ -85,7 +86,7 @@ export VX_LDFLAGS_DISPLAY:= $(if $(strip $(LDFLAGS)),$(LDFLAGS),(none))
 export VX_VERSION        := $(VERSION)
 export VX_MAKEFILE_VERSION := $(MAKEFILE_VERSION)
 
-.PHONY: all debug release build run clean rebuild
+.PHONY: all debug release build run test clean rebuild
 
 all: build
 
@@ -120,6 +121,10 @@ $(BIN_DIR) $(BUILD_DIR):
 
 run: $(TARGET)
 	./$(TARGET) $(ARGS)
+
+test: $(TARGET)
+	@echo "Running vetrix on src/test.pcap (10 packets)"
+	@./$(TARGET) -r src/test.pcap -c 10
 
 clean:
 	rm -rf build $(BIN_DIR)

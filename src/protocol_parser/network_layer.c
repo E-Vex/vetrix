@@ -53,7 +53,7 @@ void parse_ipv4_header(packet_context_t *ctx)
 
     if (ctx->remaining_payload > 0)
     {
-        fseek(ctx->fp, ctx->remaining_payload, SEEK_CUR);
+        print_payload(ctx->fp, ctx->remaining_payload);
         ctx->remaining_payload = 0;
     }
 }
