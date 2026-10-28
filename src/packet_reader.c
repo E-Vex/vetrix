@@ -26,20 +26,23 @@ void read_packets(FILE *fp, uint32_t data_link_type, uint32_t magic_number, file
     int packet_counter = 0;
     long limit = file_info->packets_to_read;
 
+    /* Detect endianness once before the packet loop */
+    uint8_t *bytes = magic_number_as_bytes(&magic_number);
+    int pcap_endian = detect_pcap_endianness(bytes);
+    int host_endian = detect_host_endianness();
+    int need_swap = (pcap_endian != host_endian);
+
+    ctx.host_endianness = host_endian;
+    ctx.pcap_endianness = pcap_endian;
+
     while ((limit < 0 || packet_counter < limit) && fread(&packet_header, sizeof(pcap_packet_header_t), 1, fp) == 1)
     {
         ctx.remaining_payload = 0;
         ctx.fp = fp;
         packet_counter++;
 
-        /*-----------------------------------------------------*/
-        uint8_t *bytes = magic_number_as_bytes(&magic_number);
-        int pcap_endian = detect_pcap_endianness(bytes);
-        ctx.host_endianness = detect_host_endianness();
-        ctx.pcap_endianness = pcap_endian;
-        if (pcap_endian != ctx.host_endianness)
+        if (need_swap)
             swap_packet_header(&packet_header);
-        /*-----------------------------------------------------*/
 
         ctx.remaining_payload += packet_header.incl_len;
 
