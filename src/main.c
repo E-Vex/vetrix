@@ -29,19 +29,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    pcap_file_info_t file_status = validate_pcap_file(&file_info);
-    if (file_status.is_valid == false)
-    {
-        fprintf(stderr, "Error: Invalid or corrupted PCAP file header.\n");
-        return -1;
-    }
-
     FILE *filePointer = import_binary_file(file_info.path);
     check_file_pointer(filePointer);
 
-    if (fread(&global_header, sizeof(pcap_global_header_t), 1, filePointer) != 1)
+    pcap_file_info_t file_status = validate_pcap_file(filePointer, &global_header);
+    if (file_status.is_valid == false)
     {
-        fprintf(stderr, "Error: failed to read global header\n");
+        fprintf(stderr, "Error: Invalid or corrupted PCAP file header.\n");
         fclose(filePointer);
         return -1;
     }

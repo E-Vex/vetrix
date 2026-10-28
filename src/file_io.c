@@ -33,34 +33,25 @@ void check_file_pointer(FILE *fp)
     }
 }
 
-pcap_file_info_t validate_pcap_file(file_info_t *file_info)
+pcap_file_info_t validate_pcap_file(FILE *fp, pcap_global_header_t *global_header)
 {
-
-    pcap_global_header_t global_header;
     pcap_file_info_t pfi = {false};
 
-    FILE *t_filePointer = import_binary_file(file_info->path);
-    check_file_pointer(t_filePointer);
-
-    if (fread(&global_header, sizeof(pcap_global_header_t), 1, t_filePointer) != 1)
+    if (fread(global_header, sizeof(pcap_global_header_t), 1, fp) != 1)
     {
-        fclose(t_filePointer);
         return pfi;
     }
 
-    if (global_header.magic_number != PCAP_MAGIC_MICRO && global_header.magic_number != PCAP_SWAPPED_MAGIC_MICRO)
+    if (global_header->magic_number != PCAP_MAGIC_MICRO && global_header->magic_number != PCAP_SWAPPED_MAGIC_MICRO)
     {
-        fclose(t_filePointer);
         return pfi;
     }
 
-    if (global_header.snaplen == 0 || global_header.snaplen > 262144)
+    if (global_header->snaplen == 0 || global_header->snaplen > 262144)
     {
-        fclose(t_filePointer);
         return pfi;
     }
 
-    fclose(t_filePointer);
     pfi.is_valid = true;
     return pfi;
 }
