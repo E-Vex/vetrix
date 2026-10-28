@@ -21,6 +21,11 @@ void parse_tcp_header(packet_context_t *ctx)
         swap_tcp_header(&tcp_header);
 
     int tcp_header_len = ((tcp_header.offset_reserved >> 4) & 0x0F) * 4;
+    if (tcp_header_len < 20)
+    {
+        fprintf(stderr, "Error: invalid TCP header length %d\n", tcp_header_len);
+        return;
+    }
     if (tcp_header_len > 20)
     {
         fseek(ctx->fp, (tcp_header_len - 20), SEEK_CUR);
